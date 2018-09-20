@@ -1,0 +1,36 @@
+SELECT fin.cid, cast(fin.day as date) as day, fin.cost
+FROM(
+
+SELECT distinct  booktott.cid, booktott.when as day, cast((booktott.booktot + shiptot.costy)as decimal(5,2)) as cost
+FROM yrb_shipping ys,
+(
+SELECT cid, yp.when, SUM(yo.price * yp.qnty) as booktot
+FROM yrb_purchase yp, yrb_book yb, yrb_offer yo
+WHERE yp.title = yb.title 
+AND yb.year = yp.year
+AND yo.title = yp.title
+AND yo.year = yp.year
+AND yp.club = yo.club
+GROUP by yp.when, cid
+ORDER BY cid
+) booktott,
+(
+SELECT weights.cid, weights.when, ys.cost as costy
+FROM yrb_shipping ys, 
+
+(SELECT cid, yp.when, SUM(yb.weight * yp.qnty) as weightot
+FROM yrb_purchase yp, yrb_book yb
+WHERE yp.title = yb.title 
+AND yb.year = yp.year
+GROUP by yp.when, cid
+ORDER BY cid)weights
+
+WHERE ys.weight = (((weightot+ 499)/500)*500) 
+) shiptot
+WHERE booktott.cid = shiptot.cid
+AND booktott.when = shiptot.when
+--GROUP BY booktott.cid, day
+ORDER BY booktott.cid, day) fin
+;
+
+

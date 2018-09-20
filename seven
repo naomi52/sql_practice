@@ -1,0 +1,8 @@
+SELECT title, year
+FROM
+(
+SELECT title, year, COUNT(club) AS counter
+FROM yrb_offer
+GROUP BY title, year
+) sub
+WHERE sub.counter = 9;

@@ -1,0 +1,22 @@
+SELECT distinct A.name, B.name
+FROM 
+(SELECT yp.cid AS cid, yp.title AS title, yp.year AS year, yb.cat AS cat,yd.name AS name
+FROM yrb_purchase yp, yrb_book yb, yrb_category yc, yrb_customer yd
+WHERE yb.cat = yc.cat
+AND yp.title = yb.title
+AND yp.cid = yd.cid
+AND yp.year = yb.year
+) A,
+(SELECT yp.cid AS cid, yp.title AS title, yp.year AS year, yb.cat AS cat, yd.name AS name
+FROM yrb_purchase yp, yrb_book yb, yrb_category yc, yrb_customer yd
+WHERE yb.cat = yc.cat
+AND yp.title = yb.title
+AND yp.cid = yd.cid
+AND yp.year = yb.year
+)B
+WHERE A.cid<> B.cid
+AND A.cid < B.cid
+AND A.title = B.title
+AND A.year = B.year
+
+;

@@ -1,0 +1,6 @@
+SELECT DISTINCT name
+FROM 
+(SELECT * 
+FROM yrb_customer C, yrb_purchase P
+WHERE C.cid = P.cid AND P.club LIKE '_A%') sub1;
+

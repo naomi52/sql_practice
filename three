@@ -1,0 +1,18 @@
+SELECT C.club, maxim as count
+FROM
+
+(SELECT MAX(memcount) as maxim
+FROM
+(SELECT club, COUNT(cid) AS memcount
+FROM yrb_member
+GROUP BY club) A
+) B, 
+(SELECT club, COUNT(cid) AS memcount
+FROM yrb_member
+GROUP BY club) C
+WHERE C.memcount = B.maxim
+
+;
+
+
+

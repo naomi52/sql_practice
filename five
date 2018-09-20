@@ -1,0 +1,19 @@
+SELECT  distinct name
+FROM yrb_customer ycus,
+
+
+(SELECT yp.cid as cid, COUNT( distinct yp.club) as counter1
+FROM yrb_purchase yp
+GROUP BY yp.cid) sub1 ,
+
+(SELECT  ym.cid as cid, COUNT(ym.club) as counter2
+FROM yrb_member ym
+GROUP BY ym.cid
+ORDER BY ym.cid) sub2
+
+WHERE sub1.counter1 <> sub2.counter2
+AND sub1.cid = sub2.cid
+AND  ycus.cid = sub1.cid
+GROUP BY name
+ORDER BY name
+;

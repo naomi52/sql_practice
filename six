@@ -1,0 +1,43 @@
+SELECT  subby.name as name, subby2.cat as cat, subby.maxim as cost
+FROM 
+
+(
+SELECT sub1.cid as cidd, sub1.name,  MAX(cost) as maxim
+FROM
+(SELECT  ycus.cid,ycus.name, ycat.cat as cat, SUM(yo.price) AS cost
+FROM yrb_offer yo, yrb_customer ycus, yrb_purchase yp, yrb_category ycat, yrb_book yb
+WHERE(
+yp.cid = ycus.cid
+AND yo.club = yp.club
+AND yo.title = yp.title
+AND yo.year = yp.year
+AND ycat.cat = yb.cat
+AND yp.title = yb.title
+AND yp.year = yb.year
+AND yo.title = yb.title
+AND yo.year = yb.year)
+GROUP BY ycat.cat,  ycus.cid, ycus.name) sub1
+GROUP BY sub1.cid, sub1.name
+) subby
+,
+
+(SELECT  ycus.cid,ycus.name, ycat.cat as cat, SUM(yo.price) AS cost
+FROM yrb_offer yo, yrb_customer ycus, yrb_purchase yp, yrb_category ycat, yrb_book yb
+WHERE(
+yp.cid = ycus.cid
+AND yo.club = yp.club
+AND yo.title = yp.title
+AND yo.year = yp.year
+AND ycat.cat = yb.cat
+AND yp.title = yb.title
+AND yp.year = yb.year
+AND yo.title = yb.title
+AND yo.year = yb.year)
+GROUP BY ycat.cat,  ycus.cid, ycus.name) subby2
+
+
+WHERE subby.maxim = subby2.cost
+AND subby2.cid = subby.cidd
+AND subby2.name= subby.name
+ORDER BY subby.cidd
+;

@@ -1,0 +1,102 @@
+SELECT final2.cid as cid, cast(final3.when as date) as day , final2.maximy as cost
+FROM
+
+(
+SELECT final.cid, MAX(final.totalcost) as maximy
+FROM
+(
+
+SELECT distinct booktotal.cid, booktotal.when, booktotal.club,
+(CASE 
+    WHEN booktotal.mysum >= 50 
+     THEN booktotal.mysum
+    ELSE shiptotal.costy + booktotal.mysum
+END ) as totalcost
+FROM yrb_shipping ys,
+
+(
+SELECT yp.cid, yp.when, yp.club, SUM (yo.price * yp.qnty) as mysum
+FROM yrb_purchase yp, yrb_offer yo, yrb_book yb
+where yp.title = yb.title 
+and yb.year = yp.year
+and yo.title = yp.title
+and yo.year = yp.year
+and yp.club = yo.club
+GROUP BY yp.club, yp.when, yp.cid
+ORDER BY yp.cid
+)booktotal
+,
+(
+SELECT weights.cid, weights.when, weights.club, ys.cost as costy
+FROM yrb_shipping ys, 
+(
+SELECT yp.cid, yp.when, yp.club, SUM(yb.weight) as weightot
+FROM yrb_purchase yp, yrb_offer yo, yrb_book yb
+where yp.title = yb.title 
+and yb.year = yp.year
+and yo.title = yp.title
+and yo.year = yp.year
+and yp.club = yo.club
+GROUP BY yp.club, yp.when, yp.cid
+ORDER BY yp.cid
+)weights
+
+WHERE ys.weight = (((weightot+ 499)/500)*500) 
+) shiptotal
+WHERE booktotal.cid = shiptotal.cid
+AND booktotal.when = shiptotal.when
+--GROUP BY booktotal.cid, booktotal.when, booktotal.club
+) final
+GROUP BY final.cid
+ORDER BY final.cid
+) final2
+,
+(SELECT distinct booktotal.cid, booktotal.when, booktotal.club,
+(CASE 
+    WHEN booktotal.mysum >= 50 
+     THEN booktotal.mysum
+    ELSE shiptotal.costy + booktotal.mysum
+END ) as totalcost
+FROM yrb_shipping ys,
+
+(
+SELECT yp.cid, yp.when, yp.club, SUM (yo.price * yp.qnty) as mysum
+FROM yrb_purchase yp, yrb_offer yo, yrb_book yb
+where yp.title = yb.title 
+and yb.year = yp.year
+and yo.title = yp.title
+and yo.year = yp.year
+and yp.club = yo.club
+GROUP BY yp.club, yp.when, yp.cid
+ORDER BY yp.cid
+)booktotal
+,
+
+(
+SELECT weights.cid, weights.when, weights.club, ys.cost as costy
+FROM yrb_shipping ys, 
+(
+SELECT cid, yp.when, yp.club, SUM(yb.weight) as weightot
+FROM yrb_purchase yp, yrb_offer yo, yrb_book yb
+where yp.title = yb.title 
+and yb.year = yp.year
+and yo.title = yp.title
+and yo.year = yp.year
+and yp.club = yo.club
+GROUP BY yp.club, yp.when, yp.cid
+ORDER BY yp.cid
+)weights
+
+WHERE ys.weight = (((weightot+ 499)/500)*500) 
+) shiptotal
+
+
+WHERE booktotal.cid = shiptotal.cid
+AND booktotal.when = shiptotal.when
+--GROUP BY booktotal.cid, booktotal.when, booktotal.club
+) final3
+
+WHERE final2.cid = final3.cid
+AND final2.maximy = final3.totalcost
+ORDER BY final2.cid
+;

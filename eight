@@ -1,0 +1,24 @@
+SELECT  yoo.title, yoo.year, yoo.price
+FROM yrb_offer yoo, yrb_book yboo,
+
+(SELECT AVG(sub2.myprice) as average
+FROM 
+
+(SELECT yo.club as myclub, MAX(yo.price) as myprice
+FROM  yrb_book yb, yrb_offer yo, yrb_category ycat
+WHERE  yb.language = 'English'
+AND yb.title = yo.title
+AND yb.year = yo.year
+AND yb.cat = ycat.cat
+GROUP BY yo.club
+ORDER BY yo.club) sub2
+)
+sub3
+
+WHERE yoo.price > sub3.average
+AND yoo.title = yboo.title
+AND yoo.year = yoo.year 
+
+
+
+;

@@ -1,0 +1,15 @@
+SELECT ycus.cid, name, ycat.cat, SUM(yo.price) AS cost
+FROM yrb_offer yo, yrb_customer ycus, yrb_purchase yp, yrb_category ycat, yrb_book yb
+WHERE(
+yp.cid = ycus.cid
+AND yo.club = yp.club
+AND yo.title = yp.title
+AND yo.year = yp.year
+AND ycat.cat = yb.cat
+AND yp.title = yb.title
+AND yp.year = yb.year
+AND yo.title = yb.title
+AND yo.year = yb.year)
+GROUP BY ycat.cat, name,  ycus.cid
+ORDER BY ycus.cid
+;
